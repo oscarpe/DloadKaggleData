@@ -34,7 +34,7 @@ Path = "Your_Save_Path"
 comp = "home-credit-default-risk"       
 file = "HomeCredit_columns_description.csv"
  
-DownloadKaggleData(competition = comp, all_files = False, file = file, save_path = Path, extract = False)        
+DownloadKaggleData(competition = comp, all_files = False, file = file, save_path = Path)        
 ```
 
 

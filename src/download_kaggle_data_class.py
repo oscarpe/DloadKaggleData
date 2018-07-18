@@ -7,6 +7,19 @@ from zipfile import ZipFile
 class DownloadKaggleData:
     def __init__(self, competition = None, all_files = True, file = None, save_path = None, extract = True):
         
+        """ Download Kaggle data from Python
+        
+        Input arguments:
+            competition -- name of competition (str)
+            all_files -- download all files from competition (bool)
+            file -- name of file to download from competition (str)
+            save_path -- Destination path (str)
+            extract -- If there are .zip files, extract them (bool)
+        Output:
+            Print progress  
+        
+        """
+        
         self._all_files = all_files
         self._file = file
         self._competition = competition
