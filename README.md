@@ -18,23 +18,50 @@ Copy download_kaggle_data_class.py from src folder and follow the next examples.
 
 ## Examples
 
+### Instance DownloadKaggleData class
+
+```
+comp = DownloadKaggleData()       
+
+# competitions list    
+list_competitions = comp._list_competitions
+
+# competitions files list        
+list_competitions_files = comp.list_competitions_files(competition="home-credit-default-risk")
+```
 ### All files
 
 ```
-Path = "Your_Save_Path"
-comp = "home-credit-default-risk"       
- 
-DownloadKaggleData(competition = comp, all_files = True, save_path = Path, extract = True)        
-```
+destination_path ="/your/destination/path/" 
 
-### One file
+comp.download_files(competition="home-credit-default-risk", 
+                    save_path=destination_path)
 
 ```
-Path = "Your_Save_Path"
-comp = "home-credit-default-risk"       
-file = "HomeCredit_columns_description.csv"
- 
-DownloadKaggleData(competition = comp, all_files = False, file = file, save_path = Path)        
+
+### Multiple files
+
 ```
+destination_path ="/your/destination/path/" 
+
+files = ['sample_submission.csv.zip', 'HomeCredit_columns_description.csv']
+
+comp.download_files(competition="home-credit-default-risk", 
+                    competition_files=files,
+                    save_path=destination_path)
+
+
+```
+
+### Extract Zip Files
+
+```
+comp.unzip_files()
+
+```
+
+
+
+
 
 

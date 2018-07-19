@@ -5,64 +5,64 @@ import subprocess
 from zipfile import ZipFile
 
 class DownloadKaggleData:
-    def __init__(self, competition = None, all_files = True, file = None, save_path = None, extract = True):
+    def __init__(self):
+        
+        # list competitions
+        self._list_competitions = self.list_competitions()
+        
+    def download_files(self, competition = None, competition_files = [], all_files = True, save_path = None):
         
         """ Download Kaggle data from Python
         
         Input arguments:
             competition -- name of competition (str)
             all_files -- download all files from competition (bool)
-            file -- name of file to download from competition (str)
+            competition_files -- list of files to download from competition (list)
             save_path -- Destination path (str)
-            extract -- If there are .zip files, extract them (bool)
+            
         Output:
             Print progress  
         
         """
         
         self._all_files = all_files
-        self._file = file
-        self._competition = competition
-        self._extract = extract
+        self._competition_files = competition_files
+        self._save_path = save_path
         
-        if competition is None:
-            raise ValueError("competition name is None")
-        else:
+        if self._save_path is None:
+            raise ValueError('invalid path destination value')
+        
+        
+        if competition is not None and competition in self._list_competitions:
             self._competition = competition
-            
-        if file is None and not all_files:
-            raise ValueError("You must provide a file name or set all_files to True")
-        elif not file is None:
-            self._all_files = False
-            self._file = file
-        
-        if save_path is None:
-            raise ValueError("You must provide a data save path")
         else:
-            self._save_path = save_path
+            raise ValueError('invalid competition value')
         
-        # get list competition files names 
-        self._files = self.file_names()
+        # list competition files
+        self._files = self.list_competitions_files(competition = self._competition)
         
-        # download one or all files
-        if not self._all_files and self._file in self._files:
-            self.save_file(file = self._file)
-            self._download_files = [self._file]
-        elif not self._all_files:
-            raise ValueError("There is not file called " + self._file)
-        
-        if self._all_files:
+        if len(self._competition_files) > 0:
+            self._all_files = False
+            
+            for tmp_save in self._competition_files:
+                if tmp_save in self._files:
+                    self.save_file(tmp_save)
+                else:
+                    raise ValueError("There is not file in competition called " + tmp_save)
+                
+            self._download_files = self._competition_files    
+                
+        elif self._all_files:
+            for tmp_save in self._files:
+                self.save_file(tmp_save)
+                
             self._download_files = self._files
-            for tmp in self._files:
-                self.save_file(tmp)
-        
-        # extract zip files        
-        if self._extract:
-            self.unzip_files()
-        
-    def file_names(self):
-        # Commmand line kaggle API list competition files
-        tmp = subprocess.getoutput("kaggle competitions files -c " + self._competition)
+        else:
+            raise ValueError('competitions_file is empty and all_files is not True')        
+            
+    
+    def list_competitions(self):
+        tmp = subprocess.getoutput("kaggle competitions list")        
         tmp = tmp.split(sep = "\n")
         
         flag = True
@@ -77,12 +77,30 @@ class DownloadKaggleData:
         tmp = tmp[ind:]
         
         return [a.split(" ")[0] for a in tmp]
+
+    def list_competitions_files(self, competition = None):
+        # Commmand line kaggle API list competition files
+        tmp = subprocess.getoutput("kaggle competitions files -c " + competition)
+        tmp = tmp.split(sep = "\n")
+        
+        flag = True
+        ind = 0
+        while(flag):
+            if "------" in tmp[ind]:
+                ind += 1
+                flag = False
+            else:
+                ind += 1
+        
+        tmp = tmp[ind:]
+        
+        return [a.split(" ")[0] for a in tmp]    
+    
         
     def save_file(self, file = None):
         # Commmand line kaggle API download competition file
         tmp = subprocess.getoutput("kaggle competitions download -c " + self._competition + " -f " + file + " -p " + self._save_path)
         print(tmp)
-        pass
     
     def unzip_files(self):
         for zipf in self._download_files:
@@ -90,9 +108,37 @@ class DownloadKaggleData:
                 tmp = ZipFile(self._save_path + "/" + zipf, 'r')
                 tmp.extractall(self._save_path)
                 tmp.close()
-    
+        print("all files unzipped success")
 
 
 
+# instance object    
+comp = DownloadKaggleData()       
 
-        
+# competitions list    
+list_competitions = comp._list_competitions
+
+# competitions files list        
+list_competitions_files = comp.list_competitions_files(competition="home-credit-default-risk")
+
+# only two files 
+
+files = ['sample_submission.csv.zip', 'HomeCredit_columns_description.csv']
+
+destination_path ="/home/oscarp/Documents/Scripts/HomeCredit/homecreditriskdefault/data/raw/" 
+
+comp.download_files(competition="home-credit-default-risk", 
+                    competition_files=files,
+                    save_path=destination_path)
+
+# all files 
+
+destination_path ="/home/oscarp/Documents/Scripts/HomeCredit/homecreditriskdefault/data/raw/" 
+
+comp.download_files(competition="home-credit-default-risk", 
+                    save_path=destination_path)
+
+# unzip files
+comp.unzip_files()
+
+
