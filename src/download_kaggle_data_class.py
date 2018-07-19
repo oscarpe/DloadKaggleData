@@ -112,33 +112,5 @@ class DownloadKaggleData:
 
 
 
-# instance object    
-comp = DownloadKaggleData()       
-
-# competitions list    
-list_competitions = comp._list_competitions
-
-# competitions files list        
-list_competitions_files = comp.list_competitions_files(competition="home-credit-default-risk")
-
-# only two files 
-
-files = ['sample_submission.csv.zip', 'HomeCredit_columns_description.csv']
-
-destination_path ="/home/oscarp/Documents/Scripts/HomeCredit/homecreditriskdefault/data/raw/" 
-
-comp.download_files(competition="home-credit-default-risk", 
-                    competition_files=files,
-                    save_path=destination_path)
-
-# all files 
-
-destination_path ="/home/oscarp/Documents/Scripts/HomeCredit/homecreditriskdefault/data/raw/" 
-
-comp.download_files(competition="home-credit-default-risk", 
-                    save_path=destination_path)
-
-# unzip files
-comp.unzip_files()
 
 
